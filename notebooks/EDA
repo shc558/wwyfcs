@@ -1,0 +1,68 @@
+# %% codecell
+import os
+import pandas as pd
+import numpy as np
+from pathlib import Path
+from wwyfcs import preprocess_text
+import matplotlib.pyplot as plt
+from sklearn.feature_extraction.text import TfidfVectorizer
+%matplotlib
+# %% codecell
+def load_data():
+  file_path='raw/Game_of_Thrones_Script.csv'
+  file_dir = os.path.join(os.getcwd(),'data') #os.path.join(os.cwd(),os.path.dirname(__file__))
+  data = pd.read_csv(Path(file_dir)/file_path)
+  print(data.info())
+  return data
+# %% codecell
+# Load and inspect the dataset
+script = load_data()
+# %% codecell
+# The main data field that will be used in training
+script['Sentence'][:20].tolist()
+
+# %% codecell
+def most_talkative_k(data, k):
+  from collections import Counter
+  nameCount = Counter(data['Name']).most_common(k)
+  print(nameCount)
+# %% codecell
+most_talkative_k(script,10)
+# %% codecell
+# Plot the distribution of sentence lengths
+script['Lengths'] = script['Sentence'].apply(lambda x: len(x.split()))
+script['Lengths'].describe()
+
+# %% codecell
+# preprocess text and get unique words by character
+def text_cleanining_pipeline(text):
+    tp = preprocess_text.TextProcessor()
+    text = tp.expand_contractions(text)
+    text = tp.remove_special_characters(text,remove_digits=True)
+    text = tp.remove_stopwords(text,is_lower_case=False, remove_short_tokens = True)
+    text = tp.lemmatize(text)
+    return text.lower()
+# text_cleanining_pipeline(script['Sentence'][0])
+
+def get_top_k_words(responses, min_score=0.7, k=10):
+    #turn corpus into tf-idf
+    vectorizer = TfidfVectorizer(preprocessor = text_cleanining_pipeline)
+    tfidf = vectorizer.fit_transform(responses)
+    tfidf_dense = tfidf.toarray()
+    tfidf_dense[tfidf_dense<min_score] = 0
+    #calculate average tfidf score of each word
+    means = np.mean(tfidf_dense, axis=0)
+    #sort from large to small and return top k words
+    top_idx = np.argsort(means)[::-1][:k]
+    features = np.array(vectorizer.get_feature_names())
+    return [(features[i], means[i]) for i in top_idx]
+# %% codecell
+characters = ['tyrion lannister', 'jon snow', 'daenerys targaryen', 'arya stark', 'cersei lannister']
+for character in characters:
+    print('Top words from {}:'.format(character))
+    print(pd.DataFrame(get_top_k_words(script[script['Name']==character]['Sentence'],k=20),
+    columns = ['word','score']))
+    print('\n')
+
+
+# %% codecell
