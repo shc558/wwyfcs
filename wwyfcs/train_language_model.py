@@ -116,7 +116,7 @@ class ModelArguments:
         metadata={"help": "Pretrained tokenizer name or path if not the same as model_name"}
     )
     cache_dir: str = field(
-        default='cached',
+        default='data/cached',
         metadata={"help": "Where do you want to store the pretrained models downloaded from s3"}
     )
 
@@ -133,6 +133,10 @@ class DataArguments:
         # default=None,
         metadata={"help": "An optional input evaluation data file to evaluate the perplexity on (a csv file)."},
         )
+    overwrite_cache: bool = field(
+        # default=True,
+        metadata={"help": "Overwrite the cached training and evaluation sets"}
+        )
     block_size: int = field(
         default=512,
         metadata={
@@ -141,16 +145,10 @@ class DataArguments:
             "Default to the model max input length for single sentence inputs (take into account special tokens)."
             },
         )
-    overwrite_cache: bool = field(
-        default=True, metadata={"help": "Overwrite the cached training and evaluation sets"}
-        )
-
     mlm: bool = field(
         default=False, metadata={"help": "Train with masked-language modeling loss instead of language modeling."}
     )
-    mlm_probability: float = field(
-        default=0.15, metadata={"help": "Ratio of tokens to mask for masked language modeling loss"}
-    )
+
 
 def construct_conv(row, tokenizer, eos = True):
     # flatten a list of lists
@@ -175,7 +173,7 @@ class ConversationDataset(Dataset):
             with open(cached_features_file, "rb") as handle:
                 self.examples = pickle.load(handle)
         else:
-            logger.info("Creating features from dataset file at %s", directory)
+            logger.info("Creating features from dataset file")
 
             self.examples = []
             for _, row in df.iterrows():
@@ -214,7 +212,9 @@ def main():
     # We now keep distinct sets of args, for a cleaner separation of concerns.
     parser = HfArgumentParser((ModelArguments,DataArguments, TrainingArguments))
     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
-
+    print('===========')
+    print(data_args)
+    print('===========')
     if data_args.eval_data_file is None and training_args.do_eval:
         raise ValueError(
             "Cannot do evaluation without an evaluation data file. Either supply a file to --eval_data_file "
@@ -238,12 +238,13 @@ def main():
         level=logging.INFO if training_args.local_rank in [-1, 0] else logging.WARN,
     )
     logger.warning(
-        "Process rank: %s, device: %s, n_gpu: %s, distributed training: %s, 16-bits training: %s",
+        "Process rank: %s, device: %s, n_gpu: %s, distributed training: %s, 16-bits training: %s, training_steps: %s",
         training_args.local_rank,
         training_args.device,
         training_args.n_gpu,
         bool(training_args.local_rank != -1),
         training_args.fp16,
+        training_args.max_steps
     )
     logger.info("Training/evaluation parameters %s", training_args)
 
