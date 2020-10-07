@@ -1,51 +1,63 @@
 # -*- coding: utf-8 -*-
+import argparse
 import os
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from pathlib import Path
 
-# create response sets where each row includes n previous responses as context
-def load_data():
-  file_path='raw/Game_of_Thrones_Script.csv'
-  file_dir = os.path.join(os.getcwd(),'data') #os.path.join(os.cwd(),os.path.dirname(__file__))
-  data = pd.read_csv(Path(file_dir)/file_path)
-  print(data.info())
+# load data and tag lines with source characters' names
+def load_data(args):
+  data = pd.read_csv(args.file_path)
+  data['id:data'] = data[args.id_colname]+':'+data[args.data_colname]
   return data
 
-def extract_dialogues(df, data_col, id_col, character=None, n=9):
-
+# create response sets where each row includes n previous responses as context
+def extract_dialogues(df, args):
   dialogue_chains = []
-
-  for i in range(n, len(df[data_col])):
-    if character: #collect responses from specified character
-      if df[id_col][i] == character:
+  n = args.len_context
+  for i in range(n, len(df[args.data_colname])):
+    if args.character: #collect responses from specified character
+      if df[args.id_colname][i] == args.character:
         row = []
         prev = i - 1 - n # include current response and previous n responses
         for j in range(i, prev, -1):
-          row.append(df[data_col][j])
+          row.append(df[args.data_colname][j])
         dialogue_chains.append(row)
     else:
       row = []
       prev = i - 1 - n
       for j in range(i, prev, -1):
-        row.append(df[data_col][j])
+        row.append(df[args.data_colname][j])
       dialogue_chains.append(row)
 
   columns = ['response','context']+['context/' + str(i) for i in range(n-1)]
 
-  return pd.DataFrame.from_records(dialogue_chains, columns= columns)
+  df = pd.DataFrame.from_records(dialogue_chains, columns= columns)
+  df = df.dropna().reset_index(drop=True)
 
-# create train and test sets
-script = load_data()
-script['Name:Sentence'] = script['Name']+':'+script['Sentence']
-# script['Name'][:3]
-DATA_COL = 'Name:Sentence'
-ID_COL = 'Name'
-df = extract_dialogues(script, DATA_COL, ID_COL)
-df = df.dropna().reset_index(drop=True)
-df.info()
+  return df
 
-train, eval = train_test_split(df, test_size = 0.1, random_state=42)
 
-train.to_csv(Path(os.getcwd())/'data'/'preprocessed'/'all_train.csv', index=False)
-eval.to_csv(Path(os.getcwd())/'data'/'preprocessed'/'all_eval.csv', index=False)
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--file_path', type=str,
+    help='Path to row data.')
+    parser.add_argument('--data_colname', type=str,
+    help='Name of the data field.')
+    parser.add_argument('--id_colname', type=str,
+    help='Name of the ID field.')
+    parser.add_argument('--output_path', type=str,
+    default=None, help='Path to output data')
+    parser.add_argument('--character', type=str,
+    default=None,help='Name of the character to extract.')
+    parser.add_argument('--len_context', type=int,
+    default = 9, help='Number of previous lines to use as context')
+
+    args = parser.parse_args()
+
+    extracted = extract_dialogues(load_data(args), args)
+    if args.output_path:
+        extracted.to_csv(args.output_path, index=False)
+    else:
+        extracted.to_csv(os.path.join(os.getcwd(),'examples.csv'), index=False)
+
+if __name__ == "__main__":
+    main()
