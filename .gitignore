@@ -9,7 +9,6 @@ build/
 SessionState.py
 Dockerfile
 .dockerignore
-model_n4/
 train_language_model_gcp.py
 create_examples_copy.py
 training_args.py
