@@ -134,7 +134,7 @@ class DataArguments:
         metadata={"help": "An optional input evaluation data file to evaluate the perplexity on (a csv file)."},
         )
     overwrite_cache: bool = field(
-        # default=True,
+        default=True,
         metadata={"help": "Overwrite the cached training and evaluation sets"}
         )
     block_size: int = field(
