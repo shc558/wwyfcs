@@ -1,7 +1,6 @@
 ## What Would Your Favorite Character Say?
-WWYFCS is a deep learning based chatbot that impersonates Game of Thrones characters. Trained on the script of the beloved TV series, the chatbot is able to speak from the perspective of any character of your liking (technically).
+WWYFCS is a deep learning based chatbot that impersonates Game of Thrones characters. Trained on the script of the beloved TV series, the chatbot is able to speak from the perspective of any character of your liking (technically, but characters with more data to train may perform better).
 
-To try out the beta version of [Jon Snow bot].
 
 
 ### How was it built?
@@ -67,8 +66,10 @@ To train on Colab, see [Fine_tunining_DialoGPT](https://github.com/shc558/wwyfcs
 
 ### Running the app using Docker
 
-After Docker is installed, pull and run the image using:
+After [Docker](https://www.docker.com/products/docker-desktop) is installed, pull and run the image using:
 
 ```
 docker run -p 8501:8501 -ti shc558/wwyfcs_app
 ```
+
+### Chatting with [Jon Snow (beta)](https://bot.dialogflow.com/jon-snow )
