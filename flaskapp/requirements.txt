@@ -1,0 +1,12 @@
+Flask==1.1.2
+firebase_admin==4.4.0
+numpy==1.19.2
+transformers==3.2.0
+torch==1.6.0
+Flask_Cors==3.0.9
+Click
+gunicorn==20.0.4
+itsdangerous
+Jinja2
+MarkupSafe
+Werkzeug
