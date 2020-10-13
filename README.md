@@ -72,4 +72,4 @@ After [Docker](https://www.docker.com/products/docker-desktop) is installed, pul
 docker run -p 8501:8501 -ti shc558/wwyfcs_app
 ```
 
-### Chatting with [Jon Snow (beta)](https://bot.dialogflow.com/jon-snow )
+Chatting with [Jon Snow (beta)](https://bot.dialogflow.com/jon-snow )
