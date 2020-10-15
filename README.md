@@ -23,7 +23,7 @@ cd wwyfcs
 In a virtual environment or a [PyTorch VM instance](https://cloud.google.com/ai-platform/deep-learning-vm/docs/pytorch_start_instance):
 
 ```
-pip install -r requirements
+pip install -r requirements.txt
 ```
 
 
@@ -47,7 +47,7 @@ After training examples are created, split the dataset into train and eval sets.
 ### Training
 
 ```
-python trainer/train_language_model \
+python trainer/train_language_model.py \
 --output_dir [path/to/save/model/outputs] (required)
 --train_data_file [path/to/train/dataset] (required)
 --eval_data_file [path/to/eval/dataset] (required)
@@ -69,7 +69,7 @@ To train on Colab, see [Fine_tunining_DialoGPT](https://github.com/shc558/wwyfcs
 After [Docker](https://www.docker.com/products/docker-desktop) is installed, pull and run the image using:
 
 ```
-docker run -p 8501:8501 -ti shc558/wwyfcs_app
+docker run -p 8501:8501 -ti shc558/wwyfcs_app:v1
 ```
 
-Chatting with [Jon Snow (beta)](https://bot.dialogflow.com/jon-snow )
+Chatting with [Jon Snow (beta)](https://bot.dialogflow.com/jon-snow ) (Bot might not respond while model is oading.)
