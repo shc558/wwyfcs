@@ -3,7 +3,7 @@ numpy
 ipykernel
 jupyter
 nltk
-sklearn
+scikit-learn
 matplotlib
 transformers
 torch
