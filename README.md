@@ -70,6 +70,8 @@ After [Docker](https://www.docker.com/products/docker-desktop) is installed, pul
 ```
 docker run -p 8501:8501 -ti shc558/wwyfcs_app:v1
 ```
-When the Streamlit app is up and running, insert text from your **terminal** to start chatting.
+When the Streamlit app is up and running, input text from your **terminal** to start chatting.
 
-Chatting with [Jon Snow (beta)](https://bot.dialogflow.com/jon-snow ) (Bot will generate empty responses while model is loading.)
+
+#### Chatting with [Jon Snow (beta)](https://bot.dialogflow.com/jon-snow )
+Note: bot will generate empty responses while model is loading.
