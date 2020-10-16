@@ -32,22 +32,21 @@ pip install -r requirements.txt
 The Game of Thrones script can be downloaded [here](https://www.kaggle.com/albenft/game-of-thrones-script-all-seasons/download).
 
 ```
-python utils/create_examples.py \
+python wwyfcs/utils/create_examples.py \
 --file_path [path/to/raw/dataset] (required)
 --data_colname Sentence (required)
 --id_colname Name (required)
 --output_path (optional)
 --character (optional, specific character to extract)
 --len_context (default=9, # previous responses to use as context)
-
+--eval_size (default=0.1, fraction of data to use for evaluation)
 ```
-After training examples are created, split the dataset into train and eval sets. This project used 10% for evaluation.
 
 
 ### Training
 
 ```
-python trainer/train_language_model.py \
+python wwyfcs/trainer/train_language_model.py \
 --output_dir [path/to/save/model/outputs] (required)
 --train_data_file [path/to/train/dataset] (required)
 --eval_data_file [path/to/eval/dataset] (required)
@@ -71,5 +70,6 @@ After [Docker](https://www.docker.com/products/docker-desktop) is installed, pul
 ```
 docker run -p 8501:8501 -ti shc558/wwyfcs_app:v1
 ```
+When the Streamlit app is up and running, insert text from your **terminal** to start chatting.
 
-Chatting with [Jon Snow (beta)](https://bot.dialogflow.com/jon-snow ) (Bot might not respond while model is oading.)
+Chatting with [Jon Snow (beta)](https://bot.dialogflow.com/jon-snow ) (Bot will generate empty responses while model is loading.)
