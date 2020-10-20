@@ -2,6 +2,7 @@
 import argparse
 import os
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 # load data and tag lines with source characters' names
 def load_data(args):
@@ -44,20 +45,26 @@ def main():
     help='Name of the data field.')
     parser.add_argument('--id_colname', type=str,
     help='Name of the ID field.')
-    parser.add_argument('--output_path', type=str,
-    default=None, help='Path to output data')
+    parser.add_argument('--output_dir', type=str,
+    default=None, help='Dir to output data')
     parser.add_argument('--character', type=str,
     default=None,help='Name of the character to extract.')
     parser.add_argument('--len_context', type=int,
     default = 9, help='Number of previous lines to use as context')
+    parser.add_argument('--eval_size', type=float,
+    default = 0.1, help='fraction to use as evaluation set')
 
     args = parser.parse_args()
 
     extracted = extract_dialogues(load_data(args), args)
-    if args.output_path:
-        extracted.to_csv(args.output_path, index=False)
+    train, eval = train_test_split(extracted[:100], test_size = args.eval_size, random_state=42)
+
+    if args.output_dir:
+        train.to_csv(os.path.join(args.output_dir,'train_examples.csv'), index=False)
+        eval.to_csv(os.path.join(args.output_dir,'eval_examples.csv'), index=False)
     else:
-        extracted.to_csv(os.path.join(os.getcwd(),'examples.csv'), index=False)
+        train.to_csv(os.path.join(os.getcwd(),'train_examples.csv'), index=False)
+        eval.to_csv(os.path.join(os.getcwd(),'eval_examples.csv'), index=False)
 
 if __name__ == "__main__":
     main()

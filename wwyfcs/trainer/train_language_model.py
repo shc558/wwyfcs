@@ -21,7 +21,7 @@ from transformers import (
     WEIGHTS_NAME,
     AdamW,
     AutoConfig,
-    AutoModelWithLMHead,
+    AutoModelForCausalLM, 
     AutoTokenizer,
     HfArgumentParser,
     PreTrainedModel,
@@ -131,10 +131,10 @@ class DataArguments:
         )
     eval_data_file: str = field(
         # default=None,
-        metadata={"help": "An optional input evaluation data file to evaluate the perplexity on (a csv file)."},
+        metadata={"help": "An optional input evaluation data file to evaluate the perplexity on (a csv file)."}
         )
     overwrite_cache: bool = field(
-        # default=True,
+        default=True,
         metadata={"help": "Overwrite the cached training and evaluation sets"}
         )
     block_size: int = field(
@@ -143,7 +143,7 @@ class DataArguments:
             "help": "Optional input sequence length after tokenization."
             "The training dataset will be truncated in block of this size for training."
             "Default to the model max input length for single sentence inputs (take into account special tokens)."
-            },
+            }
         )
     mlm: bool = field(
         default=False, metadata={"help": "Train with masked-language modeling loss instead of language modeling."}
@@ -276,7 +276,7 @@ def main():
         )
 
     if model_args.model_name_or_path:
-        model = AutoModelWithLMHead.from_pretrained(
+        model = AutoModelForCausalLM.from_pretrained(
             model_args.model_name_or_path,
             from_tf=bool(".ckpt" in model_args.model_name_or_path),
             config=config,
@@ -284,7 +284,7 @@ def main():
         )
     else:
         logger.info("Training new model from scratch")
-        model = AutoModelWithLMHead.from_config(config)
+        model = AutoModelForCausalLM.from_config(config)
 
     model.resize_token_embeddings(len(tokenizer))
 
